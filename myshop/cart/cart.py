@@ -37,7 +37,7 @@ class Cart:
         """
         product_id = str(product.id)
         if product_id in self.cart:
-            del self.Cart[product_id]
+            del self.cart[product_id]
             self.save
 
     def __iter__(self):
@@ -55,3 +55,16 @@ class Cart:
             item['price'] = Decimal(item['price'])
             item['total_price'] = item['price'] * item['quantity']
             yield item
+
+    def __len__(self):
+        return sum(item['quantity'] for item in self.cart.values())
+    
+    def get_total_price(self):
+        return sum(
+            Decimal(item['price']) * item['quantity']
+            for item in self.cart.values()
+        )
+    
+    def clear(self):
+        del self.session[settings.CART_SESSION_ID]
+        self.save()
